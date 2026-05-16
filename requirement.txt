@@ -1,0 +1,2 @@
+# Dự án sử dụng thư viện chuẩn của Python (Built-in)
+# Không cần cài đặt thư viện ngoài.
