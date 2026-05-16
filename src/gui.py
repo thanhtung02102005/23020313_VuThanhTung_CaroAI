@@ -139,10 +139,14 @@ class CaroGUI:
         urgent = self.engine.find_urgent_move(current_board)
 
         for d in range(1, 5):
+            # LƯU Ý: Phải gán cho cả GUI và ENGINE để đồng bộ dữ liệu cốt lõi
+            self._current_test_depth = d
             self.engine._current_test_depth = d
+            
             for algo in ["Minimax", "Alpha-Beta"]:
                 self.engine.nodes_visited = 0
                 self.engine.start_time = time.time()
+                self.engine.best_move_so_far = None # Reset biến lưu nước đi tốt nhất tạm thời
                 is_timeout = False
                 
                 try:
@@ -157,12 +161,13 @@ class CaroGUI:
                             score, move = self.engine.minimax(current_board, d, True)
                         else: 
                             score, move = self.engine.alpha_beta(current_board, d, -float('inf'), float('inf'), True)
-                except Exception:
+                except Exception as e:
                     is_timeout = True
+                    # Lấy nước đi tốt nhất từ engine nếu bị quá thời gian
                     move = self.engine.best_move_so_far if self.engine.best_move_so_far else (4, 4)
                     score = "Err"
 
-                dur = time.time() - self.start_time
+                dur = time.time() - self.engine.start_time
                 m_str = f"H{move[0]+1},C{move[1]+1}" if move else "N/A"
                 tag = "timeout" if is_timeout else None
                 self.log(f"{d:<2} | {algo:<11} | {m_str:<10} | {score:<10} | {self.engine.nodes_visited:<7} | {dur:.2f}s", tag=tag)
